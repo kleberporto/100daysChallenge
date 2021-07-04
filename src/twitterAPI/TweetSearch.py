@@ -13,24 +13,17 @@ def get_twitter_api():
     return tw.API(auth, wait_on_rate_limit=True)
 
 
-def retrieve_twitter_search_data(api,
-                                 search_words,
-                                 date_since,
-                                 num_of_entries):
+def retrieve_twitter_search_data(api, search_words, date_since, num_of_entries):
 
-    return tw.Cursor(api.search,
-                     q=search_words,
-                     lang="pt-br",
-                     since=date_since).items(num_of_entries)
+    return tw.Cursor(api.search, q=search_words, lang="pt-br", since=date_since).items(
+        num_of_entries
+    )
 
 
 def twitter_search(search_words, date_since, num_of_entries):
     api = get_twitter_api()
     # Collect tweets
-    return retrieve_twitter_search_data(api,
-                                        search_words,
-                                        date_since,
-                                        num_of_entries)
+    return retrieve_twitter_search_data(api, search_words, date_since, num_of_entries)
 
 
 def main():
