@@ -1,4 +1,7 @@
 /venv
 /apikeys
-src/twitterAPI/keys.py
 /src/twitterAPI/__pycache__
+src/twitterAPI/keys.py
+src/twitterAPI/connection_config.py
+
+

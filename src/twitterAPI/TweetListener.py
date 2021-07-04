@@ -2,9 +2,10 @@ import tweepy as tw
 from tweepy import Stream
 from tweepy.streaming import StreamListener
 import socket
-import json
 import keys
 import connection_config
+
+from src.twitterAPI.TweetUtilFunctions import prepare_tweet_data
 
 
 def get_twitter_auth():
@@ -17,45 +18,7 @@ def get_twitter_auth():
     return auth
 
 
-def clean_tweet_text(tweet):
-    """
-    Cleans the 'Tweet' data
-    :param tweet: tweet text string
-    :return: tweet text string without unwanted chars
-    """
-    tweet.strip('\n')
-    tweet.strip('\t')
-    return tweet
-
-
-def assembly_tweet_data(tweet_json_data):
-    """
-    Receives the Tweet in json format and returns a string ready to be sent over TCP/IP
-    :param tweet_json_data: json data loaded from on_data method
-    :return: String to be sent over TCP/IP
-    """
-    user = tweet_json_data.get('user', '').get('screen_name', '')
-    date = tweet_json_data.get('created_at', '')
-    text = clean_tweet_text(tweet_json_data['text'])
-    data_to_stream = "\t".join([user, date, text])
-    return data_to_stream
-
-
-def prepare_tweet_data(data):
-    """
-    Formats Twitter stream data to be sent through the TCP/IP Socket
-    :param data: data from the StreamListener 'on_data' method
-    :return: string with User,Date and Tweet split by '\t'
-    """
-    json_data = json.loads(data)
-    data_to_stream = assembly_tweet_data(json_data)
-    print(data_to_stream)
-
-    return data_to_stream
-
-
 class TweetListener(StreamListener):
-
     def __init__(self, csocket):
         super().__init__()
         self.client_socket = csocket
@@ -63,7 +26,8 @@ class TweetListener(StreamListener):
     def on_data(self, data):
         try:
             prepared_data = prepare_tweet_data(data)
-            self.client_socket.send(prepared_data.encode('utf-8'))
+            if prepared_data:
+                self.client_socket.send(prepared_data)
             return True
         except BaseException as e:
             print("ERROR ", e)
@@ -87,14 +51,14 @@ def send_data(c_socket, search_keywords):
     twitter_stream.filter(track=search_keywords)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     s = socket.socket()
-    host = '127.0.0.1'
+    host = "127.0.0.1"
     port = connection_config.PORT
     s.bind((host, port))
 
-    print('listening on port ' + str(port))
-
+    print("Searching tweets with: " + ", ".join(connection_config.SEARCH_LIST))
+    print("\nlistening on port " + str(port))
     s.listen(10)
     c, address = s.accept()
     send_data(c, connection_config.SEARCH_LIST)
