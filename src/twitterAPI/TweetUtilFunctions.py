@@ -23,8 +23,7 @@ def remove_url(text):
     :param text: string to have its urls removed
     :return: string with urls removed
     """
-    text = " ".join(word for word in text.split()
-                    if word.startswith("http") is False)
+    text = " ".join(word for word in text.split() if word.startswith("http") is False)
 
 
 def remove_emojis(text):
@@ -75,9 +74,10 @@ def assembly_tweet_data(tweet_json_data):
 
     if language == "pt":
         user = tweet_json_data.get("id_str", "")
+        screen_name = tweet_json_data.get("user", "").get("screen_name", "")
         date = tweet_json_data.get("created_at", "")
         text = clean_tweet_text(tweet_json_data["text"])
-        data_to_stream = "\t".join([user, date, text]) + "\n"
+        data_to_stream = "\t".join([user, screen_name, date, text]) + "\n"
         return data_to_stream
     else:
         return None

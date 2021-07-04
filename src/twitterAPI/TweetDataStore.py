@@ -25,8 +25,9 @@ def main():
     # Creating the Dataframe Schema
     tweets_df = (
         stream_data.withColumn("User_ID", split_col.getItem(0))
-        .withColumn("Date", split_col.getItem(1))
-        .withColumn("Tweet", split_col.getItem(2))
+        .withColumn("User_Name", split_col.getItem(1))
+        .withColumn("Date", split_col.getItem(2))
+        .withColumn("Tweet", split_col.getItem(3))
         .drop("value")
     )
 
